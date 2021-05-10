@@ -1,0 +1,1 @@
+export const SUBSCRIBED_TEMPLATE_ID = 'd-1ebf74de896e4a03a8453a3e841e2e7c';
