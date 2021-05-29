@@ -94,6 +94,83 @@
           }
         }
       }
+    },
+    "sankana-api": {
+      "root": "apps/sankana-api",
+      "sourceRoot": "apps/sankana-api",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/sankana-api",
+            "outputPath": "dist/apps/sankana-api"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "sankana-api:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "sankana-api:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "sankana-api:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/sankana-api"],
+          "options": {
+            "jestConfig": "apps/sankana-api/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/sankana-api/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "sankana-api-e2e": {
+      "root": "apps/sankana-api-e2e",
+      "sourceRoot": "apps/sankana-api-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/sankana-api-e2e/cypress.json",
+            "tsConfig": "apps/sankana-api-e2e/tsconfig.e2e.json",
+            "devServerTarget": "sankana-api:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sankana-api:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/sankana-api-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
     }
   }
 }

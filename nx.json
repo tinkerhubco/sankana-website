@@ -25,6 +25,13 @@
     "sankana-website-e2e": {
       "tags": [],
       "implicitDependencies": ["sankana-website"]
+    },
+    "sankana-api": {
+      "tags": []
+    },
+    "sankana-api-e2e": {
+      "tags": [],
+      "implicitDependencies": ["sankana-api"]
     }
   }
 }
