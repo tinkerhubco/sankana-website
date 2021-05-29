@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  sankana-api:
+    build:
+      context: apps/sankana-api
+    image: sankana-api-latest
+    ports:
+      - '8000:8000'
+    environment:
+      - PORT=8000
+    env_file:
+      - apps/sankana-api/.env
