@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 
 import { connect } from '../../lib/mongoose-connect';
 import { EventsModel } from '../../models/Events';
+import { tryCatchSync } from '../../utils/try-catch';
 
 const validationSchema = Yup.object({
   destination: Yup.object({
@@ -14,11 +15,19 @@ const validationSchema = Yup.object({
   }),
   createdBy: Yup.object({
     name: Yup.string().required(),
+    location: Yup.object({
+      latitude: Yup.number().required(),
+      longitude: Yup.number().required(),
+    }),
   }),
 });
 
 export const post: NextApiHandler = async (req, res) => {
-  const data = validationSchema.validateSync(req.body);
+  const [data, err] = tryCatchSync(() => validationSchema.validateSync(req.body));
+
+  if (err) {
+    return res.status(400).send(err)
+  }
 
   const eventCode = crypto
     .randomBytes(6)
@@ -33,10 +42,11 @@ export const post: NextApiHandler = async (req, res) => {
     code: eventCode,
     participants: [
       {
-        user: data.createdBy,
+        user: {
+          name: data.createdBy.name,
+        },
         locations: [
-          // Use as the initial location
-          data.destination,
+          data.createdBy.location,
         ],
       },
     ],
