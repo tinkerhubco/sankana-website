@@ -7,6 +7,7 @@ import { connect } from '../../lib/mongoose-connect';
 import { pusher } from '../../lib/pusher';
 
 import { EventsModel } from '../../models/Events';
+import { tryCatchSync } from '../../utils/try-catch';
 
 const validationSchema = Yup.object({
   name: Yup.string().required(),
@@ -18,7 +19,11 @@ const validationSchema = Yup.object({
 
 export const postJoin: NextApiHandler = async (req, res) => {
   const { code } = req.query;
-  const data = validationSchema.validateSync(req.body);
+  const [data, err] = tryCatchSync(() => validationSchema.validateSync(req.body));
+
+  if (err) {
+    return res.status(400).send(err);
+  }
 
   await connect();
 
@@ -47,6 +52,10 @@ export const postJoin: NextApiHandler = async (req, res) => {
   //     code,
   //   },
   // );
+
+  if (!event) {
+    return res.status(400).send(`No event code found for ${code}`);
+  }
 
   // const testEvent = {
   //   ...event,
