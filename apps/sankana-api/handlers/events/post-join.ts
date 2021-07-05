@@ -10,7 +10,10 @@ import { EventsModel } from '../../models/Events';
 import { tryCatchSync } from '../../utils/try-catch';
 
 const validationSchema = Yup.object({
-  name: Yup.string().required(),
+  user: Yup.object({
+    name: Yup.string().required(),
+    uuid: Yup.string().required(),
+  }),
   location: Yup.object({
     latitude: Yup.number().required(),
     longitude: Yup.number().required(),
@@ -34,9 +37,7 @@ export const postJoin: NextApiHandler = async (req, res) => {
     {
       $push: {
         participants: {
-          user: {
-            name: data.name,
-          },
+          user: data.user,
           locations: [
             data.location,
           ],

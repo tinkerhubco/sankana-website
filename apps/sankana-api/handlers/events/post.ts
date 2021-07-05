@@ -15,6 +15,7 @@ const validationSchema = Yup.object({
   }),
   createdBy: Yup.object({
     name: Yup.string().required(),
+    uuid: Yup.string().required(),
     location: Yup.object({
       latitude: Yup.number().required(),
       longitude: Yup.number().required(),
@@ -44,6 +45,7 @@ export const post: NextApiHandler = async (req, res) => {
       {
         user: {
           name: data.createdBy.name,
+          uuid: data.createdBy.uuid,
         },
         locations: [
           data.createdBy.location,

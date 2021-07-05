@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  uuid: {
+    type: String,
+    required: true,
+  },
 });
 
 export const UsersModel =
