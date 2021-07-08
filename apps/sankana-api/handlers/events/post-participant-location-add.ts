@@ -3,6 +3,7 @@ import { NextApiHandler } from 'next';
 import * as Yup from 'yup';
 
 import { Events } from '../../constants/events';
+import { connect } from '../../lib/mongoose-connect';
 import { pusher } from '../../lib/pusher';
 
 import { EventsModel } from '../../models/Events';
@@ -16,10 +17,19 @@ export const postParticipantLocationAdd: NextApiHandler = async (req, res) => {
   const data = validationSchema.validateSync(req.body);
   const { code, participantId } = req.query;
 
+  await connect();
+
   const event = await EventsModel.findOneAndUpdate(
     {
       code,
-      'participants._id': participantId,
+      /**
+       * This is a new challenge on this API. Originally, to update a participant's location
+       * is through participant id. However, there has been a new change whereas we
+       * should use user's UUID (participant.user.uuid) as the determinator.
+       *
+       * This is a note on why we use user's uuid
+       */
+      'participants.user.uuid': participantId,
     },
     {
       $push: {
