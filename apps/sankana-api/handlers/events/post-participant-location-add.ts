@@ -33,7 +33,7 @@ export const postParticipantLocationAdd: NextApiHandler = async (req, res) => {
     },
     {
       $push: {
-        'participants.0.locations': data,
+        'participants.$.locations': data,
       },
     },
     {
