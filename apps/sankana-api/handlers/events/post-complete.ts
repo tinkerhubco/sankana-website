@@ -11,14 +11,7 @@ import { EventsModel } from '../../models/Events';
 import { tryCatch, tryCatchSync } from '../../utils/try-catch';
 
 const validationSchema = Yup.object({
-  user: Yup.object({
-    name: Yup.string().required(),
-    uuid: Yup.string().required(),
-  }),
-  location: Yup.object({
-    latitude: Yup.number().required(),
-    longitude: Yup.number().required(),
-  }),
+  userId: Yup.string().required(),
 });
 
 /**
@@ -48,7 +41,7 @@ const runMiddleware = async (req: NextApiRequest, res: NextApiResponse) => {
   return event;
 };
 
-export const postJoin: NextApiHandler = async (req, res) => {
+export const postComplete: NextApiHandler = async (req, res) => {
   const [, middlewareErr] = await tryCatch(() => runMiddleware(req, res));
 
   if (middlewareErr) {
@@ -69,52 +62,27 @@ export const postJoin: NextApiHandler = async (req, res) => {
   const event = await EventsModel.findOneAndUpdate(
     {
       code,
+      'createdBy.uuid': data.userId,
       status: {
-        // Prevent from joining if the status is already completed or cancelled
+        // Do not update if the status is already completed or cancelled
         $in: [Status.Pending, Status.Started, Status.InProgress],
       },
     },
     {
-      $push: {
-        participants: {
-          user: data.user,
-          locations: [data.location],
-        },
-      },
+      status: Status.Completed,
     },
     {
       new: true,
     }
   );
-  // const event = await EventsModel.findOne(
-  //   {
-  //     code,
-  //   },
-  // );
 
   if (!event) {
     return res.status(400).send(`No event code found for ${code}`);
   }
 
-  // const testEvent = {
-  //   ...event,
-  //   participants: [
-  //     ...event.participants,
-  //     {
-  //       user: {
-  //         name: data.name,
-  //       },
-  //       locations: [
-  //         data.location
-  //       ]
-  //     },
-  //   ],
-  // };
-
   // Broadcast data `event` to all the subscribers of `code`
 
-  await pusher.trigger(code, Events.EventParticipantJoin, event);
-  // await pusher.trigger(code, Events.EventParticipantJoin, testEvent);
+  await pusher.trigger(code, Events.EventCompleted, event);
 
   res.status(200).send(event);
 };

@@ -3,5 +3,6 @@ export const Events = {
   EventCreated: 'event:created',
   EventStarted: 'event:started',
   EventCompleted: 'event:completed',
+  EventCancelled: 'event:cancelled',
   EventParticipantJoin: 'event:participant-join',
 } as const;
